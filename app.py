@@ -14,7 +14,7 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 # title
 st.title('Customer Churn')
 background_im = cv2.imread('customer_churn.jpeg')
-st.image(background_im, use_column_width=True)
+
 
 df_prep = pd.read_csv('data_preprocessed.csv')
 df_raw = pd.read_csv('data_raw.csv')
@@ -42,15 +42,17 @@ for base_model, base_name, sm_model, sm_name in zip(['lr', 'rf', 'svm', 'xgb', '
 def main():
     activities = ['Main', 'Visualization and EDA', 'Model Selection and Performance', 'Feature Importances', 'About']
     option = st.sidebar.selectbox('Select Option', activities)
-
     if option in activities:
         if option == 'Main':
+            st.image(background_im, use_column_width=True)
+            st.subheader('General info')
             st.info('Visualisation and EDA section contains some plots and graphs as well as some basic '
                      'information based on the raw and preprocessed data.')
             st.info('Model Selection and Performance section provides information about tested models and their relative performance.')
             st.info('In the Feature Importances section importance of the top 30 features predicted by different models is shown.')
 
         if option == 'Visualization and EDA':
+            st.subheader('Visualization and EDA')
             selected_dataset = st.sidebar.selectbox('Selected dataset', ['Raw', 'Preprocessed'])
             if selected_dataset == 'Raw':
                 if st.checkbox('Display shape'):
@@ -100,11 +102,13 @@ def main():
                     st.pyplot()
 
         if option == 'Model Selection and Performance':
+            st.subheader('Model Selection and Performance')
             selected_sampling_type = st.sidebar.selectbox('Select data sampling type', ['No sampling', 'SMOTEENN'])
             if selected_sampling_type == 'No sampling':
                 selected_model = st.sidebar.selectbox('Select Model', ['Logistic Regression', 'Random Forest',
                                                                        'SVC', 'XGB', 'KNN', 'Naive bayes', 'All models comparison'])
                 if selected_model == 'All models comparison':
+                    st.info('ROC Curve')
                     fig, ax = plt.subplots()
                     for name, model in base_models.items():
                         plot_roc_curve(model, X_test, y_test, ax=ax)
@@ -117,6 +121,7 @@ def main():
                                                                         'SVC SM', 'XGB SM', 'KNN SM',
                                                                        'Naive bayes SM', 'All models comparison'])
                 if selected_model == 'All models comparison':
+                    st.info('ROC Curve')
                     fig, ax = plt.subplots()
                     for name, model in sm_models.items():
                         plot_roc_curve(model, X_test, y_test, ax=ax)
@@ -130,14 +135,17 @@ def main():
                 visualizer.score(X_test, y_test)
                 visualizer.show()
                 st.pyplot(fig)
+                st.info('Confusion Matrix')
                 fig1, ax1 = plt.subplots()
                 plot_confusion_matrix(model, X_test, y_test, ax=ax1)
                 st.pyplot(fig1)
+                st.info('ROC Curve')
                 fig2, ax2 = plt.subplots()
                 plot_roc_curve(model, X_test, y_test, ax=ax2)
                 st.pyplot(fig2)
 
         if option == 'Feature Importances':
+            st.subheader('Feature Importances')
             importances_xgb = pd.DataFrame({
                 'Feature': X.columns,
                 'Importance': sm_models['XGB SM'].feature_importances_
@@ -163,6 +171,7 @@ def main():
 
 
         if option == 'About':
+            st.subheader('About')
             st.write('This is an interactive website for the Customer Churn ML Project. Data was taken from Udemy ML course.')
 
 
