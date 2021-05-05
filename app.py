@@ -133,7 +133,7 @@ def model_selection_and_performance():
             for name, model in base_models.items():
                 plot_roc_curve(model, X_test, y_test, ax=ax)
             st.pyplot(fig)
-            del base_models
+            del base_models, fig, ax
         else:
             model = base_models[selected_model]
             del base_models
@@ -173,7 +173,7 @@ def model_selection_and_performance():
         fig2, ax2 = plt.subplots()
         plot_roc_curve(model, X_test, y_test, ax=ax2)
         st.pyplot(fig2)
-        del X_test, y_test, fig, ax, fig1, ax1, fig2, ax2
+        del X_test, y_test, fig, ax, fig1, ax1, fig2, ax2, model
         gc.collect()
 
 def feature_importances():
@@ -217,12 +217,15 @@ if option == 'Main':
 
 if option == 'Visualization and EDA':
     vis_and_eda()
+    gc.collect()
 
 if option == 'Model Selection and Performance':
     model_selection_and_performance()
+    gc.collect()
 
 if option == 'Feature Importances':
     feature_importances()
+    gc.collect()
 
 if option == 'About':
     st.title('About')
