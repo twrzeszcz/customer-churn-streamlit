@@ -15,16 +15,16 @@ gc.enable()
 
 
 def load_base_models(model_name):
-    base_names = ['Logistic Regression', 'Random Forest', 'SVC', 'XGB', 'KNN', 'Naive bayes']
-    base_names_models = ['lr', 'rf', 'svm', 'xgb', 'knn', 'nb']
+    base_names = ['Logistic Regression', 'Random Forest', 'SVC', 'XGB', 'Naive bayes']
+    base_names_models = ['lr', 'rf', 'svm', 'xgb', 'nb']
     names = dict(zip(base_names, base_names_models))
     model = pickle.load(open('models/' + names[model_name] + '.pkl', 'rb'))
 
     return model
 
 def load_sm_models(model_name):
-    sm_names = ['Logistic Regression SM', 'Random Forest SM', 'SVC SM', 'XGB SM', 'KNN SM', 'Naive bayes SM']
-    sm_names_models = ['lr_sm', 'rf_sm', 'svm_sm', 'xgb_sm', 'knn_sm', 'nb_sm']
+    sm_names = ['Logistic Regression SM', 'Random Forest SM', 'SVC SM', 'XGB SM', 'Naive bayes SM']
+    sm_names_models = ['lr_sm', 'rf_sm', 'svm_sm', 'xgb_sm', 'nb_sm']
     names = dict(zip(sm_names, sm_names_models))
     model = pickle.load(open('models/' + names[model_name] + '.pkl', 'rb'))
 
@@ -124,7 +124,7 @@ def model_selection_and_performance():
 
     if selected_sampling_type == 'No sampling':
         selected_model = st.sidebar.selectbox('Select Model', ['Logistic Regression', 'Random Forest',
-                                                               'SVC', 'XGB', 'KNN', 'Naive bayes',
+                                                               'SVC', 'XGB', 'Naive bayes',
                                                                'All models comparison'])
         if selected_model == 'All models comparison':
             st.info('ROC Curves comparison')
@@ -138,7 +138,7 @@ def model_selection_and_performance():
 
     elif selected_sampling_type == 'SMOTEENN':
         selected_model = st.sidebar.selectbox('Select Model', ['Logistic Regression SM', 'Random Forest SM',
-                                                               'SVC SM', 'XGB SM', 'KNN SM',
+                                                               'SVC SM', 'XGB SM',
                                                                'Naive bayes SM', 'All models comparison'])
         if selected_model == 'All models comparison':
             st.info('ROC Curves comparison')
