@@ -8,28 +8,27 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import plot_confusion_matrix, plot_roc_curve
-from yellowbrick.classifier import ClassificationReport, ConfusionMatrix
+from yellowbrick.classifier import ClassificationReport
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 gc.enable()
 
 
-def load_base_models():
-    base_models = {}
+def load_base_models(model_name):
     base_names = ['Logistic Regression', 'Random Forest', 'SVC', 'XGB', 'KNN', 'Naive bayes']
-    for base_model, base_name in zip(['lr', 'rf', 'svm', 'xgb', 'knn', 'nb'], base_names):
-        base_models[base_name] = pickle.load(open('models/' + base_model + '.pkl', 'rb'))
+    base_names_models = ['lr', 'rf', 'svm', 'xgb', 'knn', 'nb']
+    names = dict(zip(base_names, base_names_models))
+    model = pickle.load(open('models/' + names[model_name] + '.pkl', 'rb'))
 
-    return base_models
+    return model
 
-def load_sm_models():
-    sm_models = {}
+def load_sm_models(model_name):
     sm_names = ['Logistic Regression SM', 'Random Forest SM', 'SVC SM', 'XGB SM', 'KNN SM', 'Naive bayes SM']
+    sm_names_models = ['lr_sm', 'rf_sm', 'svm_sm', 'xgb_sm', 'knn_sm', 'nb_sm']
+    names = dict(zip(sm_names, sm_names_models))
+    model = pickle.load(open('models/' + names[model_name] + '.pkl', 'rb'))
 
-    for sm_model, sm_name in zip(['lr_sm', 'rf_sm', 'svm_sm', 'xgb_sm', 'knn_sm', 'nb_sm'], sm_names):
-        sm_models[sm_name] = pickle.load(open('models/' + sm_model + '.pkl', 'rb'))
-
-    return sm_models
+    return model
 
 
 def load_data_raw():
@@ -50,13 +49,13 @@ def preprocess(df_prep):
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
-    del X_train, y_train, y, scaler, df_prep
+    del X_train, y_train, y, scaler
 
     return X, X_test, y_test
 
 def main_section():
     st.title('Customer Churn Project')
-    background_im = cv2.imread('customer_churn.jpeg')
+    background_im = cv2.imread('images/customer_churn.jpeg')
     st.image(background_im, use_column_width=True)
     st.subheader('General info')
     st.info('Visualisation and EDA section contains some plots and graphs as well as some basic '
@@ -122,39 +121,32 @@ def model_selection_and_performance():
     df_prep = load_data_prep()
     X, X_test, y_test = preprocess(df_prep)
     del X
+
     if selected_sampling_type == 'No sampling':
-        base_models = load_base_models()
         selected_model = st.sidebar.selectbox('Select Model', ['Logistic Regression', 'Random Forest',
                                                                'SVC', 'XGB', 'KNN', 'Naive bayes',
                                                                'All models comparison'])
         if selected_model == 'All models comparison':
-            st.info('ROC Curve')
-            fig, ax = plt.subplots()
-            for name, model in base_models.items():
-                plot_roc_curve(model, X_test, y_test, ax=ax)
-            st.pyplot(fig)
-            del base_models, fig, ax
+            st.info('ROC Curves comparison')
+            roc_all = cv2.imread('images/base_models_comparison.jpg')
+            st.image(roc_all, use_column_width=True)
+            del roc_all
         else:
-            model = base_models[selected_model]
-            del base_models
+            model = load_base_models(selected_model)
 
         gc.collect()
 
     elif selected_sampling_type == 'SMOTEENN':
-        sm_models = load_sm_models()
         selected_model = st.sidebar.selectbox('Select Model', ['Logistic Regression SM', 'Random Forest SM',
                                                                'SVC SM', 'XGB SM', 'KNN SM',
                                                                'Naive bayes SM', 'All models comparison'])
         if selected_model == 'All models comparison':
-            st.info('ROC Curve')
-            fig, ax = plt.subplots()
-            for name, model in sm_models.items():
-                plot_roc_curve(model, X_test, y_test, ax=ax)
-            st.pyplot(fig)
-            del sm_models, fig, ax
+            st.info('ROC Curves comparison')
+            roc_all = cv2.imread('images/sm_models_comparison.jpg')
+            st.image(roc_all, use_column_width=True)
+            del roc_all
         else:
-            model = sm_models[selected_model]
-            del sm_models
+            model = load_sm_models(selected_model)
 
         gc.collect()
 
@@ -182,10 +174,8 @@ def feature_importances():
         X, X_test, y_test = preprocess(df_prep)
         del X_test, y_test
 
-        sm_models = load_sm_models()
-        xgb = sm_models['XGB SM']
-        rf = sm_models['Random Forest SM']
-        del sm_models
+        xgb = load_sm_models('XGB SM')
+        rf = load_sm_models('Random Forest SM')
 
         importances_xgb = pd.DataFrame({
             'Feature': X.columns,
